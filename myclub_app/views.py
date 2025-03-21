@@ -3,8 +3,9 @@ import calendar
 from calendar import HTMLCalendar
 from .models import Event
 from .models import Venue
-from .forms import VenueForm
+from .forms import VenueForm, EventForm
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -15,7 +16,12 @@ def venues(request):
     except :
         venue_list = None
 
-    return render(request, 'venue_list.html', {'venue_list':venue_list})
+    p = Paginator(Venue.objects.all(),2)
+    page = request.GET.get('page')
+    venues = p.get_page(page)
+
+
+    return render(request, 'venue_list.html', {'venue_list':venue_list, 'venues':venues})
 
 def venue_details(request, venue_id):
     try :
@@ -98,3 +104,39 @@ def update_venue(request,venue_id):
         return redirect('venues')
     return render(request, 'update_venue.html', {'venue': venue, 'form':form})
 
+def add_event(request):
+    submitted = False
+    if request.method == "POST":
+       form = EventForm(request.POST)
+       if form.is_valid():
+           form.save()
+           return HttpResponseRedirect('/add_event?submitted=True')
+    else:
+        form = EventForm()
+        if 'submitted' in request.GET:
+            submitted = True
+    return render(request, 'add_event.html',{"form":form,"submitted":submitted})
+
+
+def update_event(request,event_id):
+
+    try :
+        event = Event.objects.get(pk=event_id)
+    except :
+        event = None
+    form = EventForm(request.POST or None, instance=event)
+    if form.is_valid():
+        form.save()
+        return redirect('events')
+    return render(request, 'update_event.html', {'event': event, 'form':form})
+
+
+def delete_event(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    event.delete()
+    return redirect('events')
+
+def delete_venue(request, venue_id):
+    venue = Venue.objects.get(pk=venue_id)
+    venue.delete()
+    return redirect('venues')

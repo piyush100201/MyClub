@@ -3,16 +3,41 @@
     <center>
     <h1>All Venues</h1>
     <br>
-    {% for venue in venue_list%}
-    <div class="card" style="width: 18rem;">
+    {% for venue in venues %}
+    <div class="card" style="width: 50rem;">
     <div class="card-header">{{ venue.name }}</div>
     <div class="card-body">{{ venue.address }}
     <p class="card-text">{{ venue.zip_code }}</p>
-    <a href="{% url 'venue_details' venue.id %}" class="btn btn-primary">More Details</a>
-    <a href="{% url 'update_venue' venue.id %}" class="btn btn-primary">Update Venue</a>
+    <a href="{% url 'venue_details' venue.id %}" class="btn btn-dark">More Details</a>
+    <a href="{% url 'update_venue' venue.id %}" class="btn btn-secondary">Update Venue</a>
+    <a href="{% url 'delete_venue' venue.id %}" class="btn btn-danger">Delete Venue</a>
     </div>
     </div>
     <br>
     {% endfor %}
+<!--    {{venues}}<br>-->
+<!--    Has Previous : {{ venues.has_previous }}<br>-->
+<!--    Has Next : {{ venues.has_next }}<br>-->
+<!--    Current Page : {{ venues.number }}<br>-->
+<!--    Total Pages : {{ venues.paginator.num_pages }}-->
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+
+    {% if venues.has_previous%}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ venues.previous_page_number }}">Previous</a></li>
+
+    {% endif %}
+
+      <li class="page-item disabled"><a class="page-link" href="#">Page {{ venues.number }} of {{ venues.paginator.num_pages }}</a></li>
+
+    {% if venues.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ venues.next_page_number }}">Next</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ venues.paginator.num_pages }}">Last &raquo</a></li>
+
+    {% endif %}
+      </ul>
+    </nav>
     </center>
 {% endblock content %}

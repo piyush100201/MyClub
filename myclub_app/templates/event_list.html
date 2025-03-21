@@ -4,11 +4,13 @@
     <h1>All Events</h1>
     <br>
     {% for event in event_list%}
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 50rem;">
     <div class="card-header">{{ event.name }}</div>
     <div class="card-body">{{ event.event_date }}
     <p class="card-text">{{ event.description }}</p>
-    <a href="{% url 'event_details' event.id %}" class="btn btn-primary">More Details</a>
+    <a href="{% url 'event_details' event.id %}" class="btn btn-dark">More Details</a>
+    <a href="{% url 'update_event' event.id %}" class="btn btn-secondary">Update Event</a>
+    <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">Delete Event</a>
     </div>
     </div>
     <br>
