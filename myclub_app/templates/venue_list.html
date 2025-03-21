@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <center>
+    <h1>All Venues</h1>
+    <br>
+    {% for venue in venue_list%}
+    <div class="card" style="width: 18rem;">
+    <div class="card-header">{{ venue.name }}</div>
+    <div class="card-body">{{ venue.address }}
+    <p class="card-text">{{ venue.zip_code }}</p>
+    <a href="{% url 'venue_details' venue.id %}" class="btn btn-primary">More Details</a>
+    <a href="{% url 'update_venue' venue.id %}" class="btn btn-primary">Update Venue</a>
+    </div>
+    </div>
+    <br>
+    {% endfor %}
+    </center>
+{% endblock content %}

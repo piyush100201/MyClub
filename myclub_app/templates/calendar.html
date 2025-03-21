@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Hello {{name}}!</h1>
+    <p>The year is {{year}} and the month is {{month}}.</p>
+    <h3>{{ month_number }}</h3>
+    <p>{{cal|safe}}</p>
+
+{% endblock content %}
