@@ -68,7 +68,7 @@ def schedule(request, year, month):
 
 def events(request):
     try :
-        event_list = Event.objects.all()
+        event_list = Event.objects.all().order_by('name')   #order by name
     except :
         event_list = None
 
