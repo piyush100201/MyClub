@@ -8,9 +8,13 @@
     <div class="card-header">{{ venue.name }}</div>
     <div class="card-body">{{ venue.address }}
     <p class="card-text">{{ venue.zip_code }}</p>
-    <a href="{% url 'venue_details' venue.id %}" class="btn btn-dark">More Details</a>
+
+    <a href="{% url 'venue_details' venue.id %}" class="btn btn-dark">More Details</a>,
+    {% if user.is_authenticated %}
     <a href="{% url 'update_venue' venue.id %}" class="btn btn-secondary">Update Venue</a>
+
     <a href="{% url 'delete_venue' venue.id %}" class="btn btn-danger">Delete Venue</a>
+    {% endif %}
     </div>
     </div>
     <br>

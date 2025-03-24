@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{% if user.is_authenticated %}
 <div>
 <h1>Add Event</h1>
 <br>
@@ -16,5 +16,10 @@ Your Event was submitted successfully!!
 </form>
 </div>
 
+{% endif %}
+{% else %}
+<h1> You need to login to view this Page.</h1>
+<br>
+<a href="{% url 'login' %}">Login</a>
 {% endif %}
 {% endblock content %}

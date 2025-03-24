@@ -2,6 +2,8 @@
 {% block content %}
 <center>
 <div>
+{% if user.is_authenticated %}
+
 <h1>Add Venue</h1>
 <br>
 <br>
@@ -16,5 +18,10 @@ Your Venue was submitted successfully!!
 </form>
 </div>
 </center>
+{% endif %}
+{% else %}
+<h1> You need to login to view this Page.</h1>
+<br>
+<a href="{% url 'login' %}">Login</a>
 {% endif %}
 {% endblock content %}
