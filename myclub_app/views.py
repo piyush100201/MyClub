@@ -3,9 +3,11 @@ import calendar
 from calendar import HTMLCalendar
 from .models import Event
 from .models import Venue
-from .forms import VenueForm, EventForm
+from .forms import VenueForm, EventForm, EventFormAdmin
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+from django.contrib import messages
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -26,10 +28,11 @@ def venues(request):
 def venue_details(request, venue_id):
     try :
         venue = Venue.objects.get(pk=venue_id)
+        venue_owner = User.objects.get(pk=venue.owner)
     except :
         venue = None
 
-    return render(request, 'venue_details.html', {'venue': venue})
+    return render(request, 'venue_details.html', {'venue': venue, 'venue_owner':venue_owner})
 
 
 def add_venue(request):
@@ -37,7 +40,9 @@ def add_venue(request):
     if request.method == "POST":
        form = VenueForm(request.POST)
        if form.is_valid():
-           form.save()
+           venue = form.save(commit=False)
+           venue.owner = request.user.id
+           venue.save()
            return HttpResponseRedirect('/add_venue?submitted=True')
     else:
         form = VenueForm()
@@ -107,12 +112,24 @@ def update_venue(request,venue_id):
 def add_event(request):
     submitted = False
     if request.method == "POST":
-       form = EventForm(request.POST)
-       if form.is_valid():
-           form.save()
-           return HttpResponseRedirect('/add_event?submitted=True')
+       if request.user.is_superuser:
+           form = EventFormAdmin(request.POST)
+           if form.is_valid():
+               form.save()
+               return HttpResponseRedirect('/add_event?submitted=True')
+       else:
+           form = EventForm(request.POST)
+           if form.is_valid():
+               event = form.save(commit=False)
+               event.manager = request.user
+               event.save()
+               return HttpResponseRedirect('/add_event?submitted=True')
+
     else:
-        form = EventForm()
+        if request.user.is_superuser:
+            form = EventFormAdmin()
+        else:
+            form = EventForm()
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'add_event.html',{"form":form,"submitted":submitted})
@@ -124,7 +141,10 @@ def update_event(request,event_id):
         event = Event.objects.get(pk=event_id)
     except :
         event = None
-    form = EventForm(request.POST or None, instance=event)
+    if request.user.is_superuser:
+        form = EventFormAdmin(request.POST or None, instance=event)
+    else:
+        form = EventForm(request.POST or None, instance=event)
     if form.is_valid():
         form.save()
         return redirect('events')
@@ -133,10 +153,24 @@ def update_event(request,event_id):
 
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    event.delete()
-    return redirect('events')
+    if event.manager == request.user:
+        event.delete()
+        messages.success(request,("Event Deleted!"))
+        return redirect('events')
+    else:
+        messages.success(request,("You are not authorized to delete this event!"))
+        return redirect('events')
 
 def delete_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     venue.delete()
     return redirect('venues')
+
+def my_events(request):
+    if request.user.is_authenticated:
+        me = request.user.id
+        event_list = Event.objects.filter(attendees=me).order_by('name')   #order by name
+        return render(request, 'my_events.html', {'event_list':event_list})
+    else:
+        messages.success(request, ("You are not authorized to view this page!"))
+        return redirect('events')

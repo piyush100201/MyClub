@@ -7,6 +7,7 @@ class Venue(models.Model):
     zip_code = models.CharField(max_length=6)
     phone_no = models.CharField(max_length=15,blank=True)
     email = models.EmailField(blank=True)
+    owner = models.IntegerField("Venue Owner",blank=False,default=1)
 
     def __str__(self):
         return self.name

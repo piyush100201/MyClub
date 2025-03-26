@@ -1,18 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
 {% if user.is_authenticated %}
-
-<h1>{{ event }}</h1>
-<br>
-<form action="" method=POST>
-{% csrf_token %}
-{{ form.as_p }}
-<br>
-<input type="Submit" value="Update" class="btn btn-secondary">
-</form>
+       {% if user ==  event.manager %}
+       <h1>{{ event }}</h1>
+       <br>
+       <form action="" method=POST>
+       {% csrf_token %}
+       {{ form.as_p }}
+       <br>
+       <input type="Submit" value="Update" class="btn btn-secondary">
+       </form>
+       {% else %}
+           <h2>You need to be event manager to edit this event!!</h2>
+           <h3>Logged In User : </h3>
+           {{ user }}
+           <br>
+           <h3> Event Manager : </h3>
+           {{ event.manager }}
+       {% endif %}
 {% else %}
-<h1> You need to login to view this Page.</h1>
-<br>
+   <h1> You need to login to view this Page.</h1>
+   <br>
 <a href="{% url 'login' %}">Login</a>
 {% endif %}
 {% endblock content %}
